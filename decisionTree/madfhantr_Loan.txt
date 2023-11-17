@@ -1,0 +1,59 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.preprocessing import LabelEncoder
+from sklearn.impute import SimpleImputer
+
+# Load the dataset
+df = pd.read_csv('madfhantr.csv')
+
+# Display the first few rows of the dataset to understand its structure
+print(df.head())
+
+# Data preprocessing: Handle categorical variables using label encoding
+le = LabelEncoder()
+df['Gender'] = le.fit_transform(df['Gender'])
+df['Married'] = le.fit_transform(df['Married'])
+df['Education'] = le.fit_transform(df['Education'])
+df['Self_Employed'] = le.fit_transform(df['Self_Employed'])
+df['Property_Area'] = le.fit_transform(df['Property_Area'])
+df['Loan_Status'] = le.fit_transform(df['Loan_Status'])
+
+# Handle 'Dependents' column
+df['Dependents'] = df['Dependents'].replace('3+', 3).astype(float)
+
+# Impute missing values in 'LoanAmount' and 'Loan_Amount_Term' columns
+imputer = SimpleImputer(strategy='mean')
+df[['LoanAmount', 'Loan_Amount_Term']] = imputer.fit_transform(df[['LoanAmount', 'Loan_Amount_Term']])
+
+# Drop rows with any remaining missing values
+df = df.dropna()
+
+# Choose the features (X) and the target variable (y)
+X = df.drop(['Loan_ID', 'Loan_Status'], axis=1)
+y = df['Loan_Status']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# Create a decision tree classifier
+model = DecisionTreeClassifier()
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+classification_rep = classification_report(y_test, y_pred)
+
+# Print the results
+print('Accuracy:', accuracy)
+print('Confusion Matrix:\n', conf_matrix)
+print('Classification Report:\n', classification_rep)
+

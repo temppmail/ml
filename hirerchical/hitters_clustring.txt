@@ -1,0 +1,41 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import AgglomerativeClustering
+import matplotlib.pyplot as plt
+import scipy.cluster.hierarchy as sch
+
+# Load the dataset
+data = pd.read_csv('Hitters.csv')
+
+# Display the first few rows of the dataset
+print(data.head())
+
+# Selecting the relevant column for clustering
+X = data[['CRuns']]
+
+# Drop rows with missing values
+X = X.dropna()
+
+# Standardize the data
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Use dendrogram to find the optimal number of clusters
+dendrogram = sch.dendrogram(sch.linkage(X_scaled, method='ward'))
+plt.title('Dendrogram')
+plt.xlabel('Players')
+plt.ylabel('Euclidean distances')
+plt.show()
+
+# Fit Agglomerative Hierarchical Clustering
+num_clusters = 3  # You can choose the number of clusters based on the dendrogram
+hc = AgglomerativeClustering(n_clusters=num_clusters, affinity='euclidean', linkage='ward')
+y_hc = hc.fit_predict(X_scaled)
+
+# Add the cluster labels to the dataset
+data['cluster'] = y_hc
+
+# Display the resulting clusters
+print(data[['CRuns', 'cluster']])
+

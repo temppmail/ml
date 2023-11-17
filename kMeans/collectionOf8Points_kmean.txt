@@ -1,0 +1,40 @@
+import numpy as np
+
+# Given data points
+points = np.array([[0.1, 0.6], [0.15, 0.71], [0.08, 0.9], [0.16, 0.85],
+                   [0.2, 0.3], [0.25, 0.5], [0.24, 0.1], [0.3, 0.2]])
+
+# Given initial centroids
+m1 = np.array([0.1, 0.6])
+m2 = np.array([0.3, 0.2])
+
+# Number of clusters
+k = 2
+
+# Assign data points to clusters based on the initial centroids
+cluster_assignments = np.argmin(np.linalg.norm(points - m1, axis=1)[:, None], axis=1)
+cluster_assignments[m1[1] - points[:, 1] < np.linalg.norm(m2 - points, axis=1)] = 1
+
+# Calculate the mean of the points in each cluster to get the new centroids
+m1_new = np.mean(points[cluster_assignments == 0], axis=0)
+m2_new = np.mean(points[cluster_assignments == 1], axis=0)
+
+# Output
+print("Cluster assignments:", cluster_assignments)
+print("New centroid for Cluster 1 (m1):", m1_new)
+print("New centroid for Cluster 2 (m2):", m2_new)
+
+
+
+#  answer the questions:
+
+# Which cluster does P6 belong to?
+
+# P6 = [0.25, 0.5] belongs to Cluster 1 (C1).
+# What is the population of a cluster around m2?
+
+# The population of Cluster 2 (C2) is the number of points assigned to it.
+# What is the updated value of m1 and m2?
+
+# The updated centroids are given by m1_new and m2_new.
+

@@ -1,0 +1,42 @@
+import pandas as pd
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori, association_rules
+import matplotlib.pyplot as plt
+
+# Load the dataset
+data = pd.read_csv('Order1.csv')
+
+# Convert 'Date' column to datetime format
+data['Date'] = pd.to_datetime(data['Date'], format='%d-%m-%Y')
+
+# Generating the list of transactions
+transactions = data.groupby(['Member_number', 'Date'])['itemDescription'].apply(list).reset_index(name='items')
+
+# Transform the 'items' column to a transaction-encoded format
+te = TransactionEncoder()
+te_ary = te.fit(transactions['items']).transform(transactions['items'])
+df_encoded = pd.DataFrame(te_ary, columns=te.columns_)
+
+# Train Apriori on the dataset with lower min_support
+frequent_itemsets = apriori(df_encoded, min_support=0.001, use_colnames=True)
+
+# Generate association rules
+rules = association_rules(frequent_itemsets, metric="lift", min_threshold=1)
+
+# Visualize the list of datasets
+print("Frequent Itemsets:")
+print(frequent_itemsets)
+
+print("\nAssociation Rules:")
+print(rules)
+
+# Bar chart of support and confidence
+plt.figure(figsize=(10, 6))
+plt.bar(range(len(rules)), rules['support'], color='blue', alpha=0.5, label='Support')
+plt.bar(range(len(rules)), rules['confidence'], color='orange', alpha=0.5, label='Confidence')
+plt.xlabel('Association Rules')
+plt.ylabel('Metrics')
+plt.title('Support and Confidence of Association Rules')
+plt.legend()
+plt.show()
+

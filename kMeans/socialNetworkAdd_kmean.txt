@@ -1,0 +1,30 @@
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+import matplotlib.pyplot as plt
+
+# Load the dataset
+df = pd.read_csv("Social_Network_Ads.csv")
+
+# Data pre-processing: Label Encoding and Standardize the data
+label_encoder = LabelEncoder()
+df['Gender'] = label_encoder.fit_transform(df['Gender'])
+
+# Feature selection
+X = df[['Age', 'EstimatedSalary', 'Purchased', 'Gender']]
+
+# Data Transformation: Standardize the data
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Apply K-Means clustering
+kmeans = KMeans(n_clusters=2, random_state=42)
+df['cluster'] = kmeans.fit_predict(X_scaled)
+
+# Plot the clusters
+plt.scatter(df['Age'], df['EstimatedSalary'], c=df['cluster'], cmap='viridis')
+plt.title('K-Means Clustering of Users based on Age and Estimated Salary')
+plt.xlabel('Age')
+plt.ylabel('Estimated Salary')
+plt.show()
+

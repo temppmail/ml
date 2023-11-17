@@ -1,0 +1,43 @@
+# Import necessary libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import metrics
+
+# Load the dataset
+df = pd.read_csv('1.01. Simple linear regression.csv')
+
+# Choose the independent variable (X) and the dependent variable (y)
+X = df[['SAT']]
+y = df['GPA']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# Create a linear regression model
+model = LinearRegression()
+
+# Train the model
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Plot the regression line
+plt.scatter(X_test, y_test, color='black')
+plt.plot(X_test, y_pred, color='blue', linewidth=3)
+plt.xlabel('SAT Score')
+plt.ylabel('GPA')
+plt.title('Linear Regression: SAT Score vs GPA')
+plt.show()
+
+# Display regression results
+coefficients = model.coef_
+intercept = model.intercept_
+r_squared = metrics.r2_score(y_test, y_pred)
+
+print('Coefficients:', coefficients)
+print('Intercept:', intercept)
+print('Coefficient of Determination (R-squared):', r_squared)
+
